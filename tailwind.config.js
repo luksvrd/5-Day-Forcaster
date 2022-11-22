@@ -1,6 +1,5 @@
 module.exports = {
-  purge: {
-  content: ["./index.html"],
+  content: ["./*.{html,js}"],
   // safelist: [
   //   'text-2xl',
   //   'text-3xl',
@@ -12,5 +11,4 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-},
 };

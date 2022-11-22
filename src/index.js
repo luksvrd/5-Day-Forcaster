@@ -1,3 +1,4 @@
+import "./src/style.css";
 const APIkey = "1feeae181c216523cb0b0ff24fd0683b";
 const cities = [];
 const recentCityCounter = 0;

@@ -1,112 +1,58 @@
-# 06 Server-Side APIs: Weather Dashboard
+# HW-6 Server-Side APIs: Weather Dashboard
 
-## Your Task
+Deployed [Here](https://transcendent-mochi-de988c.netlify.app/)
 
-Third-party APIs allow developers to access their data and functionality by making requests with specific parameters to a URL. Developers are often tasked with retrieving data from another application's API and using it in the context of their own. Your challenge is to build a weather dashboard that will run in the browser and feature dynamically updated HTML and CSS.
+![luksvrd](https://github.com/luksvrd/5-Day-Forcaster/blob/master/sc.png)
 
-Use the [5 Day Weather Forecast](https://openweathermap.org/forecast5) to retrieve weather data for cities. The base URL should look like the following: `https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}`. After registering for a new API key, you may need to wait up to 2 hours for that API key to activate.
+## Built Using
 
-**Hint**: Using the 5 Day Weather Forecast API, you'll notice that you will need to pass in coordinates instead of just a city name. Using the OpenWeatherMap APIs, how could we retrieve geographical coordinates given a city name?
+A Vite + TailwindCSS starter template, HTML, JavaScript. Deployed on Netlify.
 
-You will use `localStorage` to store any persistent data. For more information on how to work with the OpenWeather API, refer to the [Full-Stack Blog on how to use API keys](https://coding-boot-camp.github.io/full-stack/apis/how-to-use-api-keys).
+## Table of Contents
 
-## User Story
+- [Description](#description)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Questions](#questions)
+- [Contributing](#contributing)
+- [License](#license)
+
+### \* [Description](#description)
+
+A weather dashboard built using the [5 Day Weather Forecast](https://openweathermap.org/forecast5) third-party API. Applications runs in the browser and features dynamically updated HTML and CSS. Upon loading, the user will see a search box from which they can search a location and see the current & future forecast.
 
 ```
+User Story:
 AS A traveler
 I WANT to see the weather outlook for multiple cities
 SO THAT I can plan a trip accordingly
-```
-
-## Acceptance Criteria
 
 ```
-GIVEN a weather dashboard with form inputs
-WHEN I search for a city
-THEN I am presented with current and future conditions for that city and that city is added to the search history
-WHEN I view current weather conditions for that city
-THEN I am presented with the city name, the date, an icon representation of weather conditions, the temperature, the humidity, and the wind speed
-WHEN I view future weather conditions for that city
-THEN I am presented with a 5-day forecast that displays the date, an icon representation of weather conditions, the temperature, the wind speed, and the humidity
-WHEN I click on a city in the search history
-THEN I am again presented with current and future conditions for that city
-```
 
-## Mock-Up
+### \* [Installation](#installation)
 
-The following image shows the web application's appearance and functionality:
+This application assumes you have a 'complete dev environment' setup - a terminal, Node, & VS Code. To get started, Fork the repository and inside your terminal, run `git clone` to clone the new repo, then `cd` into it and execute `npm i` to install all the dependancies.
 
-![The weather app includes a search option, a list of cities, and a five-day forecast and current weather conditions for Atlanta.](./Assets/06-server-side-apis-homework-demo.png)
+### \* [Usage](#usage)
 
-## Grading Requirements
+Once you have installed all dependancies, you can execute the commands below to run the server & built the application through Vite.
 
-> **Note**: If a Challenge assignment submission is marked as “0”, it is considered incomplete and will not count towards your graduation requirements. Examples of incomplete submissions include the following:
->
-> * A repository that has no code
->
-> * A repository that includes a unique name but nothing else
->
-> * A repository that includes only a README file but nothing else
->
-> * A repository that only includes starter code
+- All of the necessary scripts will run from the root directory `package.json`.
 
-This Challenge is graded based on the following criteria: 
+- `npm run build` in the command line to run the build script.
 
-### Technical Acceptance Criteria: 40%
+- `npm start` in the command line to start the `localhost:3000` server.
 
-* Satisfies all of the above acceptance criteria plus the following:
+### \* [Questions](#questions)
 
-    * Uses the OpenWeather API to retrieve weather data.
+If you have any questions about the repo, open an issue at https://github.com/luksvrd/crispy-social-phone. You can also find more of my work on [Github](https://github.com/luksvrd)
 
-    * Uses `localStorage` to store persistent data.
+### \* [Contributing](#contributing)
 
-### Deployment: 32%
+Contributors: Lukas Virden
 
-* Application deployed at live URL.
+- Thanks to [Manav Misra](https://github.com/manavm1990/vanilla-vite-tailwind) for the Starter Templates & all his teachings throughout the WUSTL Coding Bootcamp.
 
-* Application loads with no errors.
+### \* [License](#license)
 
-* Application GitHub URL submitted.
-
-* GitHub repository that contains application code.
-
-### Application Quality: 15%
-
-* Application user experience is intuitive and easy to navigate.
-
-* Application user interface style is clean and polished.
-
-* Application resembles the mock-up functionality provided in the Challenge instructions.
-
-### Repository Quality: 13%
-
-* Repository has a unique name.
-
-* Repository follows best practices for file structure and naming conventions.
-
-* Repository follows best practices for class/id naming conventions, indentation, quality comments, etc.
-
-* Repository contains multiple descriptive commit messages.
-
-* Repository contains quality readme file with description, screenshot, and link to deployed application.
-
-## Review
-
-You are required to submit BOTH of the following for review:
-
-* The URL of the functional, deployed application.
-
-* The URL of the GitHub repository. Give the repository a unique name and include a readme describing the project.
-
-- - -
-© 2022 edX Boot Camps LLC. Confidential and Proprietary. All Rights Reserved.
-
-# Vite + TailwindCSS (no framework)
-
-`npm start` will...start the `localhost:3000` server.
-
-There is some opinionated/standard stuff included for ESLint and Prettier. These are wired up to do some automatic things in VS Code via [`settings.json`](./.vscode/settings.json). For example, as soon as you leave the file it will auto save, format and even fix linting stuff for you. If that's too much, you may want to reconfigure it.
-
-Finally, there are a few [recommended extensions](./.vscode/extensions.json). You'll probably want these.
-
-Hope it helps. Give it a ⭐, will ya? 🤓
+[MIT](./LICENSE)

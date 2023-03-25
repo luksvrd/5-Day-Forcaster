@@ -1,187 +1,198 @@
-const APIkey = "1feeae181c216523cb0b0ff24fd0683b";
-const cities = [];
-const recentCityCounter = 0;
+import { forecastSection, form, historySection, todaySection } from "./lib";
+import apiService from "./services/api.service";
+import renderService from "./services/render.service";
 
-window.addEventListener("load", () => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const lon = position.coords.longitude;
-      const lat = position.coords.latitude;
-      const URL =
-        `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&` +
-        `lon=${lon}&appid=${APIkey}`;
+const historyStorage = JSON.parse(localStorage.getItem("history")) || [];
 
-      fetch(URL)
-        .then((res) => {
-          return res.json();
-        })
-        .then((data) => {
-          console.log(data);
-          console.log(new Date().getTime());
-          const dat = new Date(data.dt);
-          console.log(dat.toLocaleString());
-          console.log(new Date().getMinutes());
-          weatherReport(data);
-        });
+let coords;
+let currentWeather;
+let noonForcastData;
+
+function addCityToHistoryStorage(cityName, coords) {
+  const cityNameLowered = cityName.toLowerCase();
+
+  if (!historyStorage.find((city) => city.name === cityNameLowered)) {
+    historyStorage.push({ name: cityNameLowered, coords });
+    localStorage.setItem("history", JSON.stringify(historyStorage));
+  }
+}
+
+async function renderWeather(coords) {
+  currentWeather = await apiService.getCurrentWeather(coords);
+  noonForcastData = await apiService.getNoonForecastData(coords);
+
+  renderService.renderCurrentWeather(currentWeather, todaySection);
+  renderService.renderForecast(noonForcastData, forecastSection);
+}
+
+renderService.renderHistoryButtons(historyStorage, historySection);
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const city = e.target.city.value;
+
+  coords = await apiService.getCoords(city);
+
+  addCityToHistoryStorage(city, coords);
+  renderService.renderHistoryButtons(historyStorage, historySection);
+
+  renderWeather(coords);
+});
+
+historySection.addEventListener("click", async (e) => {
+  const clicked = e.target;
+
+  if (clicked.tagName === "BUTTON") {
+    renderWeather({
+      lat: clicked.dataset.lat,
+      lon: clicked.dataset.lon,
     });
   }
 });
 
-function searchByCity() {
-  const place = document.getElementById("input").value;
-  const urlsearch = `http://api.openweathermap.org/data/2.5/weather?q=${place}&appid=${APIkey}`;
+// window.addEventListener("load", () => {
+//   if (navigator.geolocation) {
+//     navigator.geolocation.getCurrentPosition((position) => {
+//       const lon = position.coords.longitude;
+//       const lat = position.coords.latitude;
+//       const URL =
+//         `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&` +
+//         `lon=${lon}&appid=${APIkey}`;
 
-  fetch(urlsearch)
-    .then((res) => {
-      return res.json();
-    })
-    .then((data) => {
-      console.log(data);
-      weatherReport(data);
-    });
-  document.getElementById("input").value = "";
-}
+//       fetch(URL)
+//         .then((res) => {
+//           return res.json();
+//         })
+//         .then((data) => {
+//           console.log(data);
+//           console.log(new Date().getTime());
+//           const dat = new Date(data.dt);
+//           console.log(dat.toLocaleString());
+//           console.log(new Date().getMinutes());
+//           weatherReport(data);
+//         });
+//     });
+//   }
+// });
 
-function getHistory() {
-  let history = localStorage.getItem("search-history");
-  history = JSON.parse(history);
-  console.log(history);
-  history.forEach((place) => cities.push(place));
-  console.log(cities);
-}
-getHistory();
+// function searchByCity() {
+//   const place = document.getElementById("input").value;
+//   const urlsearch = `http://api.openweathermap.org/data/2.5/weather?q=${place}&appid=${APIkey}`;
 
-const createRecentCity = function () {
-  const listItemEl = document.createElement("li");
-  listItemEl.className = "recentSearch";
+//   fetch(urlsearch)
+//     .then((res) => {
+//       return res.json();
+//     })
+//     .then((data) => {
+//       console.log(data);
+//       weatherReport(data);
+//     });
+//   document.getElementById("input").value = "";
+// }
 
-  // add city id as custom attribute
-  listItemEl.setAttribute("data-city-id", recentCityCounter);
+// function getHistory() {
+//   let history = localStorage.getItem("search-history");
+//   history = JSON.parse(history);
+//   console.log(history);
+//   history.forEach((place) => cities.push(place));
+//   console.log(cities);
+// }
+// getHistory();
 
-  const cityInfoEl = document.createElement("h3");
-  cityInfoEl.className = "cityInfo";
-  cityInfoEl.innerHTML = "<h3 class='cityName'>";
-};
+// const createRecentCity = function () {
+//   const listItemEl = document.createElement("li");
+//   listItemEl.className = "recentSearch";
 
-function weatherReport(data) {
-  const urlcast =
-    `http://api.openweathermap.org/data/2.5/forecast?q=${data.name}&` +
-    `appid=${APIkey}&units=imperial`;
+//   // add city id as custom attribute
+//   listItemEl.setAttribute("data-city-id", recentCityCounter);
 
-  fetch(urlcast)
-    .then((res) => {
-      return res.json();
-    })
-    .then((forecast) => {
-      console.log(forecast.city);
-      // hourForecast(forecast);
-      dayForecast(forecast);
+//   const cityInfoEl = document.createElement("h3");
+//   cityInfoEl.className = "cityInfo";
+//   cityInfoEl.innerHTML = "<h3 class='cityName'>";
+// };
 
-      console.log(data);
-      document.getElementById("currentCityWeather").innerText =
-        data.name + ", " + data.sys.country;
-      console.log(data.name + "," + data.sys.country);
+// function weatherReport(data) {
+//   const urlcast =
+//     `http://api.openweathermap.org/data/2.5/forecast?q=${data.name}&` +
+//     `appid=${APIkey}&units=imperial`;
 
-      console.log(Math.floor(data.main.temp - 273));
-      document.getElementById("Ctemp").innerText =
-        Math.floor(data.main.temp * 1.8 - 459.67) + " °F";
+//   fetch(urlcast)
+//     .then((res) => {
+//       return res.json();
+//     })
+//     .then((forecast) => {
+//       console.log(forecast.city);
+//       // hourForecast(forecast);
+//       dayForecast(forecast);
 
-      document.getElementById("Chumd").innerText =
-        "Humidity: " + data.main.humidity + "%";
-      console.log(data.main.humidity);
+//       console.log(data);
+//       document.getElementById("currentCityWeather").innerText =
+//         data.name + ", " + data.sys.country;
+//       console.log(data.name + "," + data.sys.country);
 
-      document.getElementById("Cwind").innerText =
-        "Wind Speed: " + Math.floor(data.wind.speed / 0.44704) + "mph";
-      console.log(data.wind.speed);
+//       console.log(Math.floor(data.main.temp - 273));
+//       document.getElementById("Ctemp").innerText =
+//         Math.floor(data.main.temp * 1.8 - 459.67) + " °F";
 
-      const icon1 = data.weather[0].icon;
-      const iconURL = "http://api.openweathermap.org/img/w/" + icon1 + ".png";
-      document.getElementById("img").src = iconURL;
-    });
-}
+//       document.getElementById("Chumd").innerText =
+//         "Humidity: " + data.main.humidity + "%";
+//       console.log(data.main.humidity);
 
-// function hourForecast(forecast) {
+//       document.getElementById("Cwind").innerText =
+//         "Wind Speed: " + Math.floor(data.wind.speed / 0.44704) + "mph";
+//       console.log(data.wind.speed);
+
+//       const icon1 = data.weather[0].icon;
+//       const iconURL = "http://api.openweathermap.org/img/w/" + icon1 + ".png";
+//       document.getElementById("img").src = iconURL;
+//     });
+// }
+
+// function dayForecast(forecast) {
 //   document.getElementById("futureWeather").innerHTML = "";
-//   for (let i = 0; i < 5; i++) {
-//     let date = new Date(forecast.list[i].dt * 1000);
-//     console.log(
-//       date.toLocaleTimeString(undefined, "Asia/Kolkata").replace(":00", "")
-//     );
+//   for (let i = 7; i < forecast.list.length; i += 7) {
+//     console.log(forecast.list[i]);
+//     const div = document.createElement("div");
+//     div.setAttribute("class", "dayF");
 
-//     let hourR = document.createElement("div");
-//     hourR.setAttribute("class", "next");
+//     const day = document.createElement("p");
+//     day.setAttribute("class", "date");
+//     day.innerText = new Date(forecast.list[i].dt * 1000).toLocaleDateString();
+//     div.appendChild(day);
 
-//     let div = document.createElement("div");
-//     let time = document.createElement("p");
-//     time.setAttribute("class", "time");
-//     time.innerText = date
-//       .toLocaleTimeString(undefined, "Asia/Kolkata")
-//       .replace(":00", "");
-
-//     let temp = document.createElement("p");
-//     temp.innerText =
-//       Math.floor(forecast.list[i].main.temp_max - 273) +
-//       " °C" +
-//       " / " +
-//       Math.floor(forecast.list[i].main.temp_min - 273) +
-//       " °C";
-
-//     div.appendChild(time);
+//     const temp = document.createElement("p");
+//     temp.innerText = Math.floor(forecast.list[i].main.temp_max) + " °F";
 //     div.appendChild(temp);
 
-//     let desc = document.createElement("p");
-//     desc.setAttribute("class", "desc");
-//     desc.innerText = forecast.list[i].weather[0].description;
+//     const wind = document.createElement("p");
+//     wind.innerText = Math.floor(forecast.list[i].wind.speed) + " mph";
+//     div.appendChild(wind);
 
-//     hourR.appendChild(div);
-//     hourR.appendChild(desc);
-//     document.getElementById("futureWeather").appendChild(hourR);
+//     const hum = document.createElement("p");
+//     hum.innerText = Math.floor(forecast.list[i].main.humidity) + " %";
+//     div.appendChild(hum);
+
+//     const description = document.createElement("p");
+//     description.setAttribute("class", "desc");
+//     description.innerText = forecast.list[i].weather[0].description;
+//     div.appendChild(description);
+
+//     const icon = document.createElement("img");
+//     description.setAttribute(
+//       "src",
+//       "http://api.openweathermap.org/img/w/",
+//       ".png",
+//       "id",
+//       "img"
+//     );
+//     description.innerText = forecast.list[i].weather[0].icon;
+//     div.appendChild(icon);
+
+//     document.getElementById("futureWeather").appendChild(div);
 //   }
 // }
 
-function dayForecast(forecast) {
-  document.getElementById("futureWeather").innerHTML = "";
-  for (let i = 7; i < forecast.list.length; i += 7) {
-    console.log(forecast.list[i]);
-    const div = document.createElement("div");
-    div.setAttribute("class", "dayF");
-
-    const day = document.createElement("p");
-    day.setAttribute("class", "date");
-    day.innerText = new Date(forecast.list[i].dt * 1000).toLocaleDateString();
-    div.appendChild(day);
-
-    const temp = document.createElement("p");
-    temp.innerText = Math.floor(forecast.list[i].main.temp_max) + " °F";
-    div.appendChild(temp);
-
-    const wind = document.createElement("p");
-    wind.innerText = Math.floor(forecast.list[i].wind.speed) + " mph";
-    div.appendChild(wind);
-
-    const hum = document.createElement("p");
-    hum.innerText = Math.floor(forecast.list[i].main.humidity) + " %";
-    div.appendChild(hum);
-
-    const description = document.createElement("p");
-    description.setAttribute("class", "desc");
-    description.innerText = forecast.list[i].weather[0].description;
-    div.appendChild(description);
-
-    const icon = document.createElement("img");
-    description.setAttribute(
-      "src",
-      "http://api.openweathermap.org/img/w/",
-      ".png",
-      "id",
-      "img"
-    );
-    description.innerText = forecast.list[i].weather[0].icon;
-    div.appendChild(icon);
-
-    document.getElementById("futureWeather").appendChild(div);
-  }
-}
 // let gotPosition = function(pos) {
 //   let lat = pos.coords.latitude;
 //   let long = pos.coords.longitude;
@@ -228,7 +239,7 @@ function dayForecast(forecast) {
 
 //   let kToF;
 // }
-// ******************
+
 // const api = "1feeae181c216523cb0b0ff24fd0683b";
 // var searchInput = document.getElementById("seachInput");
 // var searchInputsubmit = document.getElementById("submit");
